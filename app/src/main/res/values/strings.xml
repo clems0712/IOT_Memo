@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Memo_Game</string>
+    <string name="Record">0</string>
 </resources>

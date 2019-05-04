@@ -18,21 +18,15 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
 
 
-        Gpio led = null;
+    Game Party = new Game();
+
         try {
-            led = RainbowHat.openLedRed();
-            led.setValue(false);
-
-            led = RainbowHat.openLedBlue();
-            led.setValue(false);
-
-            led = RainbowHat.openLedGreen();
-            led.setValue(false);
-// Close the device when done.
-            led.close();
+            Party.startup();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
     @Override
