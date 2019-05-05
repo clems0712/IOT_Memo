@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.google.android.things.contrib.driver.apa102.Apa102;
-
 import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay;
 import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
@@ -14,81 +13,20 @@ import java.io.IOException;
 
 import static android.content.ContentValues.TAG;
 
+public class IO {
 
-public class Game {
+    private IO(){}
 
+    private static com.example.memo_game.IO INSTANCE = new com.example.memo_game.IO();
 
-    public Game(){
-        this.score=0;
-        //this.record= getResources().getString(R.string.)
-
-    }
-
-    protected int score;
-    // int record;
-
-    Parameter parameters;
-    //IO Carte;
-
-
-
-
-    ////////////////////DEBUT DU JEUX///////////////////
-    protected void startup() throws IOException {
-
-        //CALCUL DU TEMPS
-        long start = System.currentTimeMillis();
-
-        ///THREAD
-
-
-        //ETAPE 1 LED RAINBOW CLIGNOTANTE
-        //Carte.rainbow_blink();
-          rainbow_blink();
-
-        //ETAPE 2 DISPLAY AFFICHAGE
-      //  Carte.diplay_chaine_blink("MEMO");
-          diplay_chaine_blink("MEMO");
-
-        //ETAPE 3 LED BOUTONS CLIGNOTANTE
-        //Carte.
-          buttn_led(true,true,true);
-
-        //ETAPE 4 MUSIQUE
-
-        long elapsedTime = System.nanoTime() - start;
-    }
-
-
-
-
-    /////////////////////FIN DU JEUX /////////////////////////
-    public void ending() throws IOException {
-
-
-
-        // Light up the rainbow
-        Apa102 ledstrip = RainbowHat.openLedStrip();
-        ledstrip.setBrightness(31);
-        int[] rainbow = new int[RainbowHat.LEDSTRIP_LENGTH];
-
-
-        for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
-            rainbow[index_rainbow] = Color.RED;
-            rainbow[index_rainbow] = Color.GREEN;
+    public static com.example.memo_game.IO getInstance()
+        {   return INSTANCE;
         }
-        ledstrip.write(rainbow);
-        // Close the device when done.
-        ledstrip.close();
 
 
-    }
+    Parameter Parameters;
 
 
-    ////////////////////////JEUX////////////////////////////////
-    public void play(){
-
-    }
 
     protected void rainbow_blink() throws IOException {
 
@@ -99,10 +37,10 @@ public class Game {
 
 
         ////CHANGEMENT LED
-        for (int index_color=0; index_color<parameters.LED_LOOP; index_color++) {
+        for (int index_color=0; index_color<Parameters.LED_LOOP; index_color++) {
 
             ////ETEIN A LA FIN
-            if((index_color+1)==parameters.LED_LOOP){
+            if((index_color+1)==Parameters.LED_LOOP){
                 for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
                     rainbow[index_rainbow] = Color.TRANSPARENT;
                 }
@@ -180,11 +118,11 @@ public class Game {
             String Chaine = new String(P_Chaine);
 
 
-            for (int index_display=0;index_display<parameters.DISPLAY_LOOP;index_display++){
+            for (int index_display=0;index_display<Parameter.DISPLAY_LOOP;index_display++){
 
 
                 try {
-                    Thread.sleep(parameters.TIME_STARTUP_DISPLAY);
+                    Thread.sleep(Parameter.TIME_STARTUP_DISPLAY);
                 }
                 catch (InterruptedException e) {
                     // TODO Auto-generated catch block
@@ -198,7 +136,7 @@ public class Game {
 
                 ////A AMELIORER
                 try {
-                    Thread.sleep(parameters.TIME_STARTUP_DISPLAY);
+                    Thread.sleep(Parameter.TIME_STARTUP_DISPLAY);
                 }
                 catch (InterruptedException e) {
                     // TODO Auto-generated catch block
@@ -221,7 +159,8 @@ public class Game {
     protected void buttn_led(boolean P_RED, boolean P_GREEN, boolean P_BLUE) throws IOException {
 
 
-        if (P_RED) {
+
+        if (P_RED){
             Gpio ledR;
             ledR = RainbowHat.openLedRed();
             ledR.setValue(true);
@@ -230,7 +169,7 @@ public class Game {
             ledR.close();
         }
 
-        if (P_GREEN) {
+        if (P_GREEN){
             Gpio ledG;
             ledG = RainbowHat.openLedGreen();
             ledG.setValue(true);
@@ -239,37 +178,42 @@ public class Game {
             ledG.close();
         }
 
-        if (P_BLUE) {
+        if (P_BLUE){
             Gpio ledB;
             ledB = RainbowHat.openLedBlue();
             ledB.setValue(true);
+
 
 
             ledB.close();
         }
 
 
+
         ////A AMELIORER
         try {
-            Thread.sleep(parameters.TIME_STARTUP_BTNLED);
-        } catch (InterruptedException e) {
+            Thread.sleep(Parameter.TIME_STARTUP_BTNLED);
+        }
+        catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
 
-        if (P_RED) {
+
+        if (P_RED){
             Gpio ledR;
             ledR = RainbowHat.openLedRed();
-            Log.d(TAG, "Getvalue !!!!!!!!!!!!!!!!!!!!!! : " + ledR.getValue());
+            Log.d(TAG, "Getvalue !!!!!!!!!!!!!!!!!!!!!! : "+ledR.getValue());
             ledR.setValue(false);
-            Log.d(TAG, "Getvalue !!!!!!!!!!!!!!!!!!!!!!: " + ledR.getValue());
+            Log.d(TAG, "Getvalue !!!!!!!!!!!!!!!!!!!!!!: "+ledR.getValue());
+
 
 
             ledR.close();
         }
 
-        if (P_GREEN) {
+        if (P_GREEN){
             Gpio ledG;
             ledG = RainbowHat.openLedGreen();
             ledG.setValue(false);
@@ -278,18 +222,24 @@ public class Game {
             ledG.close();
         }
 
-        if (P_BLUE) {
+        if (P_BLUE){
             Gpio ledB;
             ledB = RainbowHat.openLedBlue();
             ledB.setValue(false);
+
 
 
             ledB.close();
         }
 
 
+
+
     }
 
+
+
+
+
+
     }
-
-
