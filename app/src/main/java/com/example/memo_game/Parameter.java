@@ -32,6 +32,8 @@ public class Parameter {
 //    public static final long TIME_STARTUP_BTNLED = 0;
 
 
+    public static final int RAINBOW_BLINK = 3;
+
     public static final long TIME_LED_MEMO = 1000;
 
 

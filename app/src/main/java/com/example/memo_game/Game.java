@@ -1,9 +1,7 @@
 package com.example.memo_game;
 
+import android.support.annotation.RestrictTo;
 import android.util.Log;
-
-import com.google.android.things.contrib.driver.button.Button;
-import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
 
 
 import java.io.IOException;
@@ -23,9 +21,7 @@ public class Game {
         this.record=9;
         //this.record= getResources().getString(R.string.)
 
-        this.Memo_lvl=3;
-
-        this.Verificator ='\0';
+        this.memo_lvl=DEFAULT_lvl;
         this.index_verificator=0;
     }
 
@@ -37,13 +33,12 @@ public class Game {
 
 
     ///Nb de * à mémoriser
-    int Memo_lvl;
-
+    int memo_lvl;
+    int DEFAULT_lvl=3;
     //Vector des series de couleurs random
     Vector Serie = new Vector();
 
     // verification avec la serie variable globale pour les boutons
-    char Verificator;
     int index_verificator;
 
 
@@ -57,11 +52,23 @@ public class Game {
     protected void startup() throws IOException {
 
         //CALCUL DU TEMPS
-        long start = System.currentTimeMillis();
+
 
         ///THREADS POUR LA SYNCHRO
 
-        //ETAPE 1 LED RAINBOW CLIGNOTANTE
+        //ETAPE 1 LED BOUTONS CLIGNOTANTE
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Carte.buttn_led(true,true,true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+        //ETAPE 2 LED RAINBOW CLIGNOTANTE
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -74,28 +81,16 @@ public class Game {
 
 
 
-        //ETAPE 2 DISPLAY AFFICHAGE
-        new Thread(new Runnable() {
-            public void run() {
+        //ETAPE 3 DISPLAY AFFICHAGE
                 try {
                     Carte.diplay_chaine_blink("MEMO");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-        }).start();
 
 
-        //ETAPE 3 LED BOUTONS CLIGNOTANTE
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Carte.buttn_led(true,true,true);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        long start = System.currentTimeMillis();
+
 
         //ETAPE 4 MUSIQUE
 //        new Thread(new Runnable() {
@@ -110,6 +105,16 @@ public class Game {
 //        }).start();
 
         long elapsedTime = System.nanoTime() - start;
+
+        Log.i(TAG, " time : " + elapsedTime);
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
     }
 
 
@@ -118,16 +123,18 @@ public class Game {
 
     public void win() throws IOException {
 
-        Carte.rainbow_win();
 
+        Carte.diplay_chaine("WIN");
+        Carte.rainbow_win();
 
     }
 
     /////////////////////FIN DU JEUX /////////////////////////
     public void lose() throws IOException {
 
-
+        Carte.diplay_chaine("LOSE");
         Carte.rainbow_lose();
+
 
 
 
@@ -163,51 +170,77 @@ public class Game {
     protected void memo() throws IOException {
 
 
+        Serie.clear();
+        Vector L_Serie = new Vector();
 
-        for (int index_memo=0; index_memo<Memo_lvl;index_memo++){
+        for (int index_memo = 0; index_memo< memo_lvl; index_memo++){
 
             ///RANDOM : de 65 a 67 ASCII de A, B et C
             int Random_LED = (int)( 65+ (Math.random()*(68-65)));
-
             Carte.buttn_ledone((char)Random_LED);
 
             //SON A B C à ajouter
 
-            Serie.add((char)Random_LED);
-
+            //Pour éviter bug d'appui sur le bouton pdt l'injection
+            L_Serie.add((char)Random_LED);
+            
 
             ///Debug RED ONLY
             //Carte.buttn_ledone('A');
-           //Serie.add('A');
+            //Serie.add('A');
         }
 
+        Serie=L_Serie;
     }
 
 
-    protected void verification() throws IOException {
+    protected void verification(char P_Button) throws IOException {
+
 
         if(!Serie.isEmpty()){
+
             if(index_verificator<Serie.size()){
 
-                if(Verificator!=((char)Serie.get(index_verificator))){
+                if(P_Button!=((char)Serie.get(index_verificator))){
                     Log.i(TAG, "u lose");
+
+                    ///REMISE A 0
+
+
                     try {
                         lose();
-                        // memo();
+
+                        index_verificator=0;
+                        Serie.clear();
+                        score=0;
+                        memo_lvl=DEFAULT_lvl;
+
+                        play();
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
 
-                else if(Verificator==((char)Serie.get(index_verificator))){
-                    Log.i(TAG, "Succes " + Verificator+ " == " + Serie.get(index_verificator));
+                else if(P_Button==((char)Serie.get(index_verificator))){
+                    Log.i(TAG, "Succes " + P_Button+ " == " + Serie.get(index_verificator));
                     index_verificator++;
+
+
 
                     if(index_verificator==Serie.size()){
                         Log.i(TAG, "u win");
 
+                        ///REMISE A 0 et level up
+                        index_verificator=0;
+                        Serie.clear();
+                        score++;
+                        memo_lvl++;
+
                         try {
+
                             win();
+                            play();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -216,16 +249,11 @@ public class Game {
 
             }
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+
+
         }
         else{
-
-            Log.i(TAG, "Serie is empty");
+            Log.i(TAG, "Serie is empty, no memo in queue");
 
         }
 

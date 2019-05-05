@@ -40,7 +40,7 @@ public class IO {
 
         //////////// LED RAIBOW COLOR
         Apa102 ledstrip = RainbowHat.openLedStrip();
-        ledstrip.setBrightness(5);
+        ledstrip.setBrightness(2);
         int[] rainbow = new int[RainbowHat.LEDSTRIP_LENGTH];
 
 
@@ -85,11 +85,28 @@ public class IO {
         ledstrip.setBrightness(1);
         int[] rainbow = new int[RainbowHat.LEDSTRIP_LENGTH];
 
+    for(int index_blink = 0; index_blink < parameters.RAINBOW_BLINK; index_blink++) {
 
         for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
             rainbow[index_rainbow] = Color.GREEN;
         }
         ledstrip.write(rainbow);
+
+
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+            rainbow[index_rainbow] = Color.TRANSPARENT;
+        }
+        ledstrip.write(rainbow);
+
+
+    }
         // Close the device when done.
         ledstrip.close();
     }
@@ -103,10 +120,27 @@ public class IO {
         int[] rainbow = new int[RainbowHat.LEDSTRIP_LENGTH];
 
 
-        for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
-            rainbow[index_rainbow] = Color.RED;
+        for(int index_blink = 0; index_blink < parameters.RAINBOW_BLINK; index_blink++) {
+
+            for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                rainbow[index_rainbow] = Color.RED;
+            }
+            ledstrip.write(rainbow);
+
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                rainbow[index_rainbow] = Color.TRANSPARENT;
+            }
+            ledstrip.write(rainbow);
+
         }
-        ledstrip.write(rainbow);
+
         // Close the device when done.
         ledstrip.close();
     }
@@ -130,8 +164,9 @@ public class IO {
     }
 
 
-    //////DISPLAY ALPHANUM
 
+
+    //////DISPLAY ALPHANUM
     protected void diplay_chaine(String P_Chaine) throws IOException {
 
 
@@ -140,7 +175,8 @@ public class IO {
             segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
             segment.display("ERR");
             segment.setEnabled(true);
-        } else {
+        }
+        else {
             AlphanumericDisplay segment = RainbowHat.openDisplay();
             segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
 
@@ -148,6 +184,7 @@ public class IO {
 
             segment.display(Chaine);
             segment.setEnabled(true);
+            segment.close();
 
 
         }
@@ -228,6 +265,7 @@ public class IO {
 
             segment.display(Chaine);
             segment.setEnabled(true);
+            segment.close();
 
 
         }
@@ -237,8 +275,6 @@ public class IO {
 
 
     //////BUTTON & LED
-
-
     protected void buttn_led(boolean P_RED, boolean P_GREEN, boolean P_BLUE) throws IOException {
 
 
@@ -398,45 +434,6 @@ public class IO {
     }
 
 
-    protected void buttn_push() throws IOException {
-
-        char button_return = '\0';
-
-
-
-            Log.i(TAG, "While button");
-
-
-//
-//        buttonA.close();
-//        buttonB.close();
-//        buttonC.close();
-//
-//        Log.i(TAG, "End button" );
-//
-//
-//        Buttons_pressed=false;
-//
-//        if(ButtonA){
-//            button_return='A';
-//        }
-//        else if(ButtonB){
-//            button_return='B';
-//
-//
-//        }
-//        else if (ButtonC){
-//            button_return='C';
-//        }
-//
-//        ButtonA=false;
-//        ButtonB=false;
-//        ButtonC=false;
-
-
-        // return button_return;
-
-    }
 
     //////BUZZER
 

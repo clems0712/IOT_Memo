@@ -31,11 +31,10 @@ public class HomeActivity extends Activity {
 
 
 
-
-
         try {
-            //Party.startup();
-            Party.play();
+              Party.startup();
+              Party.play();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,14 +62,16 @@ public class HomeActivity extends Activity {
         buttonA.setOnButtonEventListener(new Button.OnButtonEventListener() {
             @Override
             public void onButtonEvent(Button buttonA, boolean pressed) {
-                Log.i(TAG, "Button A" + pressed);
-                Party.Verificator = 'A';
+                Log.i(TAG, "Button A pressed " + pressed);
 
-                try {
-                    Party.verification();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (pressed){
+                    try {
+                        Party.verification('A');
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+
             }
 
         });
@@ -78,15 +79,15 @@ public class HomeActivity extends Activity {
         buttonB.setOnButtonEventListener(new Button.OnButtonEventListener() {
             @Override
             public void onButtonEvent(Button buttonB, boolean pressed) {
-                Log.i(TAG, "Button B" + pressed);
-                Party.Verificator = 'B';
+                Log.i(TAG, "Button B pressed " + pressed);
 
-                try {
-                    Party.verification();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (pressed) {
+                    try {
+                        Party.verification('B');
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-
 
             }
 
@@ -96,13 +97,14 @@ public class HomeActivity extends Activity {
             @Override
             public void onButtonEvent(Button buttonC, boolean pressed) {
 
-                Log.i(TAG, "Button C" + pressed);
-                Party.Verificator = 'C';
+                Log.i(TAG, "Button C pressed " + pressed);
 
-                try {
-                    Party.verification();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (pressed) {
+                    try {
+                        Party.verification('C');
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
