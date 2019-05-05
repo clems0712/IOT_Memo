@@ -15,10 +15,10 @@ public class Parameter {
 
     //////PARAMETRE DU JEUX :
 
-    public static final int LED_LOOP = 10;
-    public static final int DISPLAY_LOOP = 6;
+    public static final int LED_LOOP = 30;
+    public static final int DISPLAY_LOOP = 5;
 
     public static final long TIME_STARTUP_DISPLAY = 500;
-    public static final long TIME_STARTUP_BTNLED = 1000;
+    public static final long TIME_STARTUP_BTNLED = 3000;
 
 }

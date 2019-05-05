@@ -10,6 +10,7 @@ import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
 import com.google.android.things.pio.Gpio;
 
+
 import java.io.IOException;
 
 import static android.content.ContentValues.TAG;
@@ -27,8 +28,7 @@ public class Game {
     protected int score;
     // int record;
 
-    Parameter parameters;
-    //IO Carte;
+   Parameter parameters;
 
 
 
@@ -41,20 +41,57 @@ public class Game {
 
         ///THREAD
 
-
         //ETAPE 1 LED RAINBOW CLIGNOTANTE
-        //Carte.rainbow_blink();
-          rainbow_blink();
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    rainbow_blink();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
 
         //ETAPE 2 DISPLAY AFFICHAGE
-      //  Carte.diplay_chaine_blink("MEMO");
-          diplay_chaine_blink("MEMO");
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    diplay_chaine_blink("MEMO");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
 
         //ETAPE 3 LED BOUTONS CLIGNOTANTE
-        //Carte.
-          buttn_led(true,true,true);
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    buttn_led(true,true,true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         //ETAPE 4 MUSIQUE
+
+//        new Thread(new Runnable() {
+//            public void run() {
+//                try {
+//
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
 
         long elapsedTime = System.nanoTime() - start;
     }
@@ -89,6 +126,7 @@ public class Game {
     public void play(){
 
     }
+
 
     protected void rainbow_blink() throws IOException {
 
@@ -290,6 +328,9 @@ public class Game {
 
     }
 
-    }
+
+
+
+}
 
 
