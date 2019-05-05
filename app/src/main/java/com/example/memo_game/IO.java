@@ -189,7 +189,41 @@ public class IO {
 
         }
 
+    }
 
+
+    //////DISPLAY ALPHANUM
+    protected void diplay_chaine_pause(String P_Chaine) throws IOException {
+
+
+        if (P_Chaine.length() > 4) {
+            AlphanumericDisplay segment = RainbowHat.openDisplay();
+            segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
+            segment.display("ERR");
+            segment.setEnabled(true);
+        }
+        else {
+            AlphanumericDisplay segment = RainbowHat.openDisplay();
+            segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
+
+            String Chaine = new String(P_Chaine);
+
+            segment.display(Chaine);
+            segment.setEnabled(true);
+
+            try {
+                Thread.sleep(parameters.TIME_DISPLAY);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+
+            segment.close();
+
+
+
+        }
     }
 
     protected void diplay_chaine_blink(String P_Chaine) throws IOException {
@@ -436,6 +470,42 @@ public class IO {
 
 
     //////BUZZER
+    protected void led_sound(char P_LED){
+
+        switch (P_LED){
+            case 'A':
+                //DO
+                break;
+
+            case 'B':
+                //RE
+                break;
+
+            case 'C':
+                //MI
+                break;
+        }
+    }
+
+
+    protected void music_start(){
+
+        //JETER UN OEIL
+        //https://github.com/Nilhcem/uartfun-androidthings/blob/master/app/src/main/java/com/nilhcem/uart/RainbowHatHelper.java
+
+    }
+
+    protected void sound_lose(){
+
+    }
+
+    protected void sound_win(){
+
+    }
+
+    protected void music_record(){
+
+    }
 
 
 }

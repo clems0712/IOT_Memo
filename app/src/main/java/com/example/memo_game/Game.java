@@ -1,6 +1,5 @@
 package com.example.memo_game;
 
-import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 
@@ -12,21 +11,20 @@ import static android.content.ContentValues.TAG;
 
 public class Game {
 
+    ////CONSTRUCTEUR
 
     public Game(){
 
-        this.Alive=true;
-
         this.score=0;
+        //DOIT ETRE INITIALISE PAR UNE RESSOURCE
         this.record=9;
-        //this.record= getResources().getString(R.string.)
 
         this.memo_lvl=DEFAULT_lvl;
-        this.index_verificator=0;
+        this.index_verification =0;
     }
 
-    ///Joueur vivant
-    boolean Alive;
+    //// ATTRIBUTS
+
 
     protected int score;
     protected int record;
@@ -35,24 +33,28 @@ public class Game {
     ///Nb de * à mémoriser
     int memo_lvl;
     int DEFAULT_lvl=3;
+
     //Vector des series de couleurs random
     Vector Serie = new Vector();
 
     // verification avec la serie variable globale pour les boutons
-    int index_verificator;
+    int index_verification;
 
 
 
+    /// ENTRE/SORTIE
     IO Carte = new IO();
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    ///METHODES JEUX
 
     ////////////////////DEBUT DU JEUX///////////////////
     protected void startup() throws IOException {
 
         //CALCUL DU TEMPS
-
+        long start = System.currentTimeMillis();
 
         ///THREADS POUR LA SYNCHRO
 
@@ -84,12 +86,13 @@ public class Game {
         //ETAPE 3 DISPLAY AFFICHAGE
                 try {
                     Carte.diplay_chaine_blink("MEMO");
+                    Carte.diplay_chaine_pause("PLAY");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
 
-        long start = System.currentTimeMillis();
+
 
 
         //ETAPE 4 MUSIQUE
@@ -104,6 +107,8 @@ public class Game {
 //            }
 //        }).start();
 
+
+        ////TIMER
         long elapsedTime = System.nanoTime() - start;
 
         Log.i(TAG, " time : " + elapsedTime);
@@ -118,9 +123,7 @@ public class Game {
     }
 
 
-
     ////////////////////WIN/////////////////////////
-
     public void win() throws IOException {
 
 
@@ -128,6 +131,7 @@ public class Game {
         Carte.rainbow_win();
 
     }
+
 
     /////////////////////FIN DU JEUX /////////////////////////
     public void lose() throws IOException {
@@ -142,7 +146,6 @@ public class Game {
 
 
     ////////////////////NEW RECCORD/////////////////////////
-
     public void Succes() throws IOException {
 
         //rainbow clignotant et display GG et new reccord clignotant musique
@@ -151,6 +154,7 @@ public class Game {
 
     }
 
+
     ////////////////////////JEUX////////////////////////////////
     public void play() throws IOException {
 
@@ -158,15 +162,10 @@ public class Game {
 
         memo();
 
-
-
-
     }
 
 
-
-
-
+    ////////////////////////MEMO GENERATION////////////////////////////////
     protected void memo() throws IOException {
 
 
@@ -194,14 +193,15 @@ public class Game {
     }
 
 
+    ////////////////////////VERIFICATION ENTREE////////////////////////////////
     protected void verification(char P_Button) throws IOException {
 
 
         if(!Serie.isEmpty()){
 
-            if(index_verificator<Serie.size()){
+            if(index_verification <Serie.size()){
 
-                if(P_Button!=((char)Serie.get(index_verificator))){
+                if(P_Button!=((char)Serie.get(index_verification))){
                     Log.i(TAG, "u lose");
 
                     ///REMISE A 0
@@ -210,7 +210,12 @@ public class Game {
                     try {
                         lose();
 
-                        index_verificator=0;
+
+                        if(score>record){
+                            save_record();
+                        }
+
+                        index_verification =0;
                         Serie.clear();
                         score=0;
                         memo_lvl=DEFAULT_lvl;
@@ -222,17 +227,17 @@ public class Game {
                     }
                 }
 
-                else if(P_Button==((char)Serie.get(index_verificator))){
-                    Log.i(TAG, "Succes " + P_Button+ " == " + Serie.get(index_verificator));
-                    index_verificator++;
+                else if(P_Button==((char)Serie.get(index_verification))){
+                    Log.i(TAG, "Succes " + P_Button+ " == " + Serie.get(index_verification));
+                    index_verification++;
 
 
 
-                    if(index_verificator==Serie.size()){
+                    if(index_verification ==Serie.size()){
                         Log.i(TAG, "u win");
 
                         ///REMISE A 0 et level up
-                        index_verificator=0;
+                        index_verification =0;
                         Serie.clear();
                         score++;
                         memo_lvl++;
@@ -257,6 +262,12 @@ public class Game {
 
         }
 
+    }
+
+
+    ////////////////////////SAUVEGARDE RECORD////////////////////////////////
+    protected void save_record(){
+        //SAUVEGARDER RECORD
     }
 
 
