@@ -87,7 +87,6 @@ public class IO {
 
 
         for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
-            rainbow[index_rainbow] = Color.RED;
             rainbow[index_rainbow] = Color.GREEN;
         }
         ledstrip.write(rainbow);
@@ -105,8 +104,7 @@ public class IO {
 
 
         for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
-
-            rainbow[index_rainbow] = Color.GREEN;
+            rainbow[index_rainbow] = Color.RED;
         }
         ledstrip.write(rainbow);
         // Close the device when done.
