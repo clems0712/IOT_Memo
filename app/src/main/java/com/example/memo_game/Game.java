@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.android.things.contrib.driver.apa102.Apa102;
 
+import com.google.android.things.contrib.driver.button.Button;
 import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay;
 import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
@@ -12,6 +13,7 @@ import com.google.android.things.pio.Gpio;
 
 
 import java.io.IOException;
+import java.util.Vector;
 
 import static android.content.ContentValues.TAG;
 
@@ -20,15 +22,30 @@ public class Game {
 
 
     public Game(){
+
+        Alive=true;
+
         this.score=0;
+        this.record=9;
         //this.record= getResources().getString(R.string.)
 
+
+        Verificator ='\0';
+        index_verificator=0;
     }
 
-    protected int score;
-    // int record;
+    boolean Alive;
 
-   Parameter parameters;
+    protected int score;
+    protected int record;
+
+    Vector Serie = new Vector();
+    char Verificator;
+    int index_verificator;
+
+
+
+    IO Carte = new IO();
 
 
 
@@ -39,14 +56,14 @@ public class Game {
         //CALCUL DU TEMPS
         long start = System.currentTimeMillis();
 
-        ///THREAD
+        ///THREADS POUR LA SYNCHRO
 
         //ETAPE 1 LED RAINBOW CLIGNOTANTE
 
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    rainbow_blink();
+                    Carte.rainbow_blink();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -60,7 +77,7 @@ public class Game {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    diplay_chaine_blink("MEMO");
+                    Carte.diplay_chaine_blink("MEMO");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -73,7 +90,7 @@ public class Game {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    buttn_led(true,true,true);
+                    Carte.buttn_led(true,true,true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -103,231 +120,146 @@ public class Game {
     public void ending() throws IOException {
 
 
+        Carte.rainbow_lose();
 
-        // Light up the rainbow
-        Apa102 ledstrip = RainbowHat.openLedStrip();
-        ledstrip.setBrightness(31);
-        int[] rainbow = new int[RainbowHat.LEDSTRIP_LENGTH];
-
-
-        for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
-            rainbow[index_rainbow] = Color.RED;
-            rainbow[index_rainbow] = Color.GREEN;
-        }
-        ledstrip.write(rainbow);
-        // Close the device when done.
-        ledstrip.close();
 
 
     }
 
 
     ////////////////////////JEUX////////////////////////////////
-    public void play(){
+    public void play() throws IOException {
+
+        Carte.diplay_demi(Integer.toString(this.record),Integer.toString(this.score));
+
+        memo();
+
+
+
 
     }
 
+    protected void memo() throws IOException {
 
-    protected void rainbow_blink() throws IOException {
-
-        //////////// LED RAIBOW COLOR
-        Apa102 ledstrip = RainbowHat.openLedStrip();
-        ledstrip.setBrightness(31);
-        int[] rainbow = new int[RainbowHat.LEDSTRIP_LENGTH];
+        int memo_loop=3;
 
 
-        ////CHANGEMENT LED
-        for (int index_color=0; index_color<parameters.LED_LOOP; index_color++) {
-
-            ////ETEIN A LA FIN
-            if((index_color+1)==parameters.LED_LOOP){
-                for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
-                    rainbow[index_rainbow] = Color.TRANSPARENT;
-                }
-            }
-            else {
-                for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
-                    ///RANDOM DES COULEURS CODE SUR 360
-                    float Nb_random = (float) (Math.random() * (360 - 1));
-                    rainbow[index_rainbow] = Color.HSVToColor(255, new float[]{Nb_random, 1.0f, 1.0f});
-                }
-            }
 
 
-            ledstrip.write(rainbow);
 
-            ///PAUSE
+        for (int index_memo=0; index_memo<memo_loop;index_memo++){
+
+            ///RANDOM : de 65 a 67 ASCII de A, B et C
+            int Random_LED = (int)( 65+ (Math.random()*(68-65)));
+            Carte.buttn_ledone((char)Random_LED);
+            //SON A B C
+            Serie.add((char)Random_LED);
+
+        }
+
+
+        //Log.i(TAG, "Serie de LED" + Serie);
+
+
+            char button_return = '\0';
+
+
+
+
+            Button buttonA = null;
             try {
-                Thread.sleep(80);
-            }
-            catch (InterruptedException e) {
-                // TODO Auto-generated catch block
+                buttonA = RainbowHat.openButtonA();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+            Button buttonB = null;
+            try {
+                buttonB = RainbowHat.openButtonB();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Button buttonC = null;
+            try {
+                buttonC = RainbowHat.openButtonC();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
 
-        // Close the device when done.
-        ledstrip.close();
-
-    }
-
-    protected void diplay_chaine(String P_Chaine) throws IOException {
+        final boolean[] lose = new boolean[1];
 
 
-        if(P_Chaine.length()>4){
-            AlphanumericDisplay segment = RainbowHat.openDisplay();
-            segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
-            segment.display("ERR");
-            segment.setEnabled(true);
-        }
+            buttonA.setOnButtonEventListener(new Button.OnButtonEventListener() {
+                @Override
+                public void onButtonEvent(Button buttonA, boolean pressed) {
 
-        else{
-            AlphanumericDisplay segment = RainbowHat.openDisplay();
-            segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
+                    Log.i(TAG, "Button A" + pressed);
+                    Verificator = 'A';
 
-            String Chaine = new String(P_Chaine);
-
-            segment.display(Chaine);
-            segment.setEnabled(true);
-
-
-        }
-
-
-
-
-
-
-    }
-
-    protected void diplay_chaine_blink(String P_Chaine) throws IOException {
-
-
-        if(P_Chaine.length()>4){
-            AlphanumericDisplay segment = RainbowHat.openDisplay();
-            segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
-            segment.display("ERR");
-            segment.setEnabled(true);
-        }
-
-        else{
-            AlphanumericDisplay segment = RainbowHat.openDisplay();
-            segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
-
-            String Chaine = new String(P_Chaine);
-
-
-            for (int index_display=0;index_display<parameters.DISPLAY_LOOP;index_display++){
-
-
-                try {
-                    Thread.sleep(parameters.TIME_STARTUP_DISPLAY);
+                    if(Verificator==(char)Serie.get(index_verificator)){
+                        Log.i(TAG, "Succes " + Verificator+ " et " + Serie.get(index_verificator));
+                        index_verificator++;
+                    }
+                    else{
+                        //lose[0] =true;
+                    }
                 }
-                catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+
+            });
+
+
+            buttonB.setOnButtonEventListener(new Button.OnButtonEventListener() {
+                @Override
+                public void onButtonEvent(Button buttonB, boolean pressed) {
+
+                    Log.i(TAG, "Button B" + pressed);
+                    Verificator = 'B';
+
+                    if(Verificator==(char)Serie.get(index_verificator)){
+                        Log.i(TAG, "Succes " + Verificator+ " et " + Serie.get(index_verificator));
+                        index_verificator++;
+                    }
+                    else{
+                        //lose[0] =true;
+                    }
                 }
-                segment.clear();
-
-                segment.display(Chaine);
-                segment.setEnabled(true);
+            });
 
 
-                ////A AMELIORER
-                try {
-                    Thread.sleep(parameters.TIME_STARTUP_DISPLAY);
+            buttonC.setOnButtonEventListener(new Button.OnButtonEventListener() {
+                @Override
+                public void onButtonEvent(Button buttonC, boolean pressed) {
+
+                    Log.i(TAG, "Button C" + pressed);
+                    Verificator = 'C';
+
+                    if(Verificator==(char)Serie.get(index_verificator)){
+                        Log.i(TAG, "Succes " + Verificator+ " et " + Serie.get(index_verificator));
+                        index_verificator++;
+                    }
+                    else{
+                        //lose[0] =true;
+                    }
                 }
-                catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                segment.clear();
+            });
 
 
+
+
+            if (index_verificator==Serie.size()) {
+
+                Log.i(TAG, "Succes " + Verificator+ " et " + (char)Serie.get(index_verificator));
 
             }
 
-            segment.close();
-        }
+
+
+
 
 
 
 
     }
-
-    protected void buttn_led(boolean P_RED, boolean P_GREEN, boolean P_BLUE) throws IOException {
-
-
-        if (P_RED) {
-            Gpio ledR;
-            ledR = RainbowHat.openLedRed();
-            ledR.setValue(true);
-
-
-            ledR.close();
-        }
-
-        if (P_GREEN) {
-            Gpio ledG;
-            ledG = RainbowHat.openLedGreen();
-            ledG.setValue(true);
-
-
-            ledG.close();
-        }
-
-        if (P_BLUE) {
-            Gpio ledB;
-            ledB = RainbowHat.openLedBlue();
-            ledB.setValue(true);
-
-
-            ledB.close();
-        }
-
-
-        ////A AMELIORER
-        try {
-            Thread.sleep(parameters.TIME_STARTUP_BTNLED);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-
-        if (P_RED) {
-            Gpio ledR;
-            ledR = RainbowHat.openLedRed();
-            Log.d(TAG, "Getvalue !!!!!!!!!!!!!!!!!!!!!! : " + ledR.getValue());
-            ledR.setValue(false);
-            Log.d(TAG, "Getvalue !!!!!!!!!!!!!!!!!!!!!!: " + ledR.getValue());
-
-
-            ledR.close();
-        }
-
-        if (P_GREEN) {
-            Gpio ledG;
-            ledG = RainbowHat.openLedGreen();
-            ledG.setValue(false);
-
-
-            ledG.close();
-        }
-
-        if (P_BLUE) {
-            Gpio ledB;
-            ledB = RainbowHat.openLedBlue();
-            ledB.setValue(false);
-
-
-            ledB.close();
-        }
-
-
-    }
-
 
 
 
