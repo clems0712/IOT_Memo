@@ -1,12 +1,14 @@
 package com.example.memo_game;
 
 import android.graphics.Color;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.google.android.things.contrib.driver.apa102.Apa102;
 import com.google.android.things.contrib.driver.button.Button;
 import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay;
 import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
+import com.google.android.things.contrib.driver.pwmspeaker.Speaker;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
 import com.google.android.things.pio.Gpio;
 
@@ -27,6 +29,7 @@ public class IO {
     }
 
     Parameter parameters;
+    Notes Soundbox;
 
     boolean Buttons_pressed;
 
@@ -77,6 +80,123 @@ public class IO {
         ledstrip.close();
 
     }
+
+    protected void rainbow_colors(char P_LED) throws IOException {
+
+
+        // Light up the rainbow
+        Apa102 ledstrip = RainbowHat.openLedStrip();
+        ledstrip.setBrightness(1);
+        int[] rainbow = new int[RainbowHat.LEDSTRIP_LENGTH];
+
+
+        switch (P_LED){
+            case 'A':
+
+                try {
+                    Thread.sleep(parameters.TIME_LED_MEMO/2);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                for(int index_blink = 0; index_blink < parameters.RAINBOW_BLINK; index_blink++) {
+
+                    for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                        rainbow[index_rainbow] = Color.RED;
+                    }
+                    ledstrip.write(rainbow);
+
+                    try {
+                        Thread.sleep(parameters.TIME_LED_MEMO/4);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                        rainbow[index_rainbow] = Color.TRANSPARENT;
+                    }
+                    ledstrip.write(rainbow);
+
+                }
+                break;
+
+
+            case 'B':
+
+                try {
+                    Thread.sleep(parameters.TIME_LED_MEMO/2);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                for(int index_blink = 0; index_blink < parameters.RAINBOW_BLINK; index_blink++) {
+
+                    for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                        rainbow[index_rainbow] = Color.GREEN;
+                    }
+                    ledstrip.write(rainbow);
+
+
+                    try {
+                        Thread.sleep(parameters.TIME_LED_MEMO/4);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                        rainbow[index_rainbow] = Color.TRANSPARENT;
+                    }
+                    ledstrip.write(rainbow);
+
+                }
+                break;
+
+
+            case 'C':
+
+                try {
+                    Thread.sleep(parameters.TIME_LED_MEMO/2);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                for(int index_blink = 0; index_blink < parameters.RAINBOW_BLINK; index_blink++) {
+
+                    for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                        rainbow[index_rainbow] = Color.BLUE;
+                    }
+                    ledstrip.write(rainbow);
+
+
+                    try {
+                        Thread.sleep(parameters.TIME_LED_MEMO/4);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    for (int index_rainbow = 0; index_rainbow < rainbow.length; index_rainbow++) {
+                        rainbow[index_rainbow] = Color.TRANSPARENT;
+                    }
+
+                    ledstrip.write(rainbow);
+
+                }
+                break;
+
+
+
+        }
+
+              // Close the device when done.
+        ledstrip.close();
+    }
+
 
     protected void rainbow_win() throws IOException {
 
@@ -388,7 +508,7 @@ public class IO {
             case 'A':
 
                 try {
-                    Thread.sleep(parameters.TIME_LED_MEMO);
+                    Thread.sleep(parameters.TIME_LED_MEMO/2);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -416,7 +536,7 @@ public class IO {
             case 'B':
 
                 try {
-                    Thread.sleep(parameters.TIME_LED_MEMO);
+                    Thread.sleep(parameters.TIME_LED_MEMO/2);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -440,7 +560,7 @@ public class IO {
             //C - Blue
             case 'C':
                 try {
-                    Thread.sleep(parameters.TIME_LED_MEMO);
+                    Thread.sleep(parameters.TIME_LED_MEMO/2);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -470,21 +590,62 @@ public class IO {
 
 
     //////BUZZER
-    protected void led_sound(char P_LED){
 
-        switch (P_LED){
+    protected void note_button(char P_Button) throws IOException {
+
+        Speaker buzzer = RainbowHat.openPiezo();
+
+        switch (P_Button){
             case 'A':
-                //DO
+                int DO_frequency = Soundbox.Return_note('A');
+                buzzer.play(DO_frequency);
+
+
                 break;
 
             case 'B':
-                //RE
+                int RE_frequency = Soundbox.Return_note('B');
+                buzzer.play(RE_frequency);
+
+
                 break;
 
             case 'C':
-                //MI
+                int MI_frequency = Soundbox.Return_note('C');
+                buzzer.play(MI_frequency);
+
                 break;
         }
+
+        try {
+            Thread.sleep(parameters.TIME_NOTE);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // Close the device when done.
+        buzzer.stop();
+        buzzer.close();
+    }
+
+
+
+
+    protected void sound_lose(){
+
+    }
+
+    //protected
+    public void sound_win() throws IOException {
+
+        Speaker buzzer = RainbowHat.openPiezo();
+        buzzer.play(440);
+// Stop the buzzer.
+        buzzer.stop();
+// Close the device when done.
+        buzzer.close();
+
     }
 
 
@@ -495,13 +656,7 @@ public class IO {
 
     }
 
-    protected void sound_lose(){
 
-    }
-
-    protected void sound_win(){
-
-    }
 
     protected void music_record(){
 

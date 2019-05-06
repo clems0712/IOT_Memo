@@ -175,8 +175,46 @@ public class Game {
         for (int index_memo = 0; index_memo< memo_lvl; index_memo++){
 
             ///RANDOM : de 65 a 67 ASCII de A, B et C
-            int Random_LED = (int)( 65+ (Math.random()*(68-65)));
-            Carte.buttn_ledone((char)Random_LED);
+            final int Random_LED = (int)( 65+ (Math.random()*(68-65)));
+
+
+            Thread buttn_led = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Carte.buttn_ledone((char)Random_LED);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+          Thread rainbowthread = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Carte.rainbow_colors((char)Random_LED);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+
+            buttn_led.start();
+            rainbowthread.start();
+
+
+
+            try {
+                rainbowthread.join(); // Waiting thread to finish
+                buttn_led.join();// Waiting thread to finish
+            }
+            catch (InterruptedException ie) {
+            }
+
+
+
 
             //SON A B C à ajouter
 
@@ -194,12 +232,53 @@ public class Game {
 
 
     ////////////////////////VERIFICATION ENTREE////////////////////////////////
-    protected void verification(char P_Button) throws IOException {
+    protected void verification(final char P_Button) throws IOException {
 
 
         if(!Serie.isEmpty()){
 
             if(index_verification <Serie.size()){
+
+
+                Thread buttn_led = new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Carte.buttn_ledone(P_Button);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+
+                Thread rainbowthread = new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Carte.rainbow_colors(P_Button);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+
+                Thread soundbox = new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Carte.note_button(P_Button);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+
+
+                buttn_led.start();
+                rainbowthread.start();
+                //soundbox.start();
+
+
 
                 if(P_Button!=((char)Serie.get(index_verification))){
                     Log.i(TAG, "u lose");
@@ -208,6 +287,16 @@ public class Game {
 
 
                     try {
+                        rainbowthread.join(); // Waiting thread to finish
+                        buttn_led.join();// Waiting thread to finish
+                       // soundbox.join();
+                    }
+                    catch (InterruptedException ie) {
+                    }
+
+                    try {
+
+
                         lose();
 
 
@@ -235,6 +324,15 @@ public class Game {
 
                     if(index_verification ==Serie.size()){
                         Log.i(TAG, "u win");
+
+
+                        try {
+                            rainbowthread.join(); // Waiting thread to finish
+                            buttn_led.join();// Waiting thread to finish
+                           // soundbox.join();
+                        }
+                        catch (InterruptedException ie) {
+                        }
 
                         ///REMISE A 0 et level up
                         index_verification =0;

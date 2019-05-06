@@ -32,7 +32,7 @@ public class HomeActivity extends Activity {
 
 
         try {
-              Party.startup();
+             // Party.startup();
               Party.play();
 
         } catch (IOException e) {
