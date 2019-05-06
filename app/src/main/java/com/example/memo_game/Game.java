@@ -3,6 +3,10 @@ package com.example.memo_game;
 import android.util.Log;
 
 
+import com.google.android.things.contrib.driver.pwmspeaker.Speaker;
+import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
+import com.teamgeny.androidthings1.rainbow.Piezo;
+
 import java.io.IOException;
 import java.util.Vector;
 
@@ -17,12 +21,13 @@ public class Game {
 
         this.score=0;
         //DOIT ETRE INITIALISE PAR UNE RESSOURCE
-        this.record=9;
+        this.record=1;
 
         this.memo_lvl=DEFAULT_lvl;
         this.index_verification =0;
     }
 
+    Piezo Jukebox;
     //// ATTRIBUTS
 
 
@@ -96,16 +101,48 @@ public class Game {
 
 
         //ETAPE 4 MUSIQUE
-//        new Thread(new Runnable() {
-//            public void run() {
-//                try {
-//
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
+//         Jukebox.play(Piezo.Note.DO,200);
+//        Log.i(TAG, " Musique : ");
+//                Jukebox.stop();
+//                Jukebox.clean();
+//        Jukebox.play(Piezo.Note.RE,200);
+//        Log.i(TAG, " Musique : ");
+//        Jukebox.stop();
+
+
+        // Play a note on the buzzer.
+        Speaker buzzer = RainbowHat.openPiezo();
+        buzzer.play(349.228);
+
+        try {
+            Thread.sleep(350);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(587.33);
+
+        try {
+            Thread.sleep(350);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(329.628);
+
+        try {
+            Thread.sleep(350);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // Stop the buzzer.
+        buzzer.stop();
+// Close the device when done.
+        buzzer.close();
+
 
 
         ////TIMER
@@ -158,6 +195,7 @@ public class Game {
     ////////////////////////JEUX////////////////////////////////
     public void play() throws IOException {
 
+        Carte.diplay_chaine_blink("GO");
         Carte.diplay_demi(Integer.toString(this.record),Integer.toString(this.score));
 
         memo();
@@ -201,9 +239,66 @@ public class Game {
             });
 
 
+
+            try {
+                Thread.sleep(350);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            Speaker buzzer = RainbowHat.openPiezo();
+switch ((char)Random_LED){
+    case 'A':
+
+        buzzer.play(659.255);
+
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        break;
+
+    case 'B':
+        buzzer.play(587.33);
+
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        break;
+
+
+    case 'C':
+        buzzer.play(523.251);
+
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        break;
+}
+            // Stop the buzzer.
+            buzzer.stop();
+// Close the device when done.
+            buzzer.close();
+
+
+            //Carte.note_button((char)Random_LED);
+
+
+
             buttn_led.start();
             rainbowthread.start();
-
 
 
             try {
@@ -262,20 +357,62 @@ public class Game {
                     }
                 });
 
-                Thread soundbox = new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            Carte.note_button(P_Button);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                //Carte.note_button(P_Button);
 
-                    }
-                });
+
+
 
 
                 buttn_led.start();
                 rainbowthread.start();
+
+
+                Speaker buzzer = RainbowHat.openPiezo();
+                switch (P_Button){
+                    case 'A':
+
+                        buzzer.play(659.255);
+
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                        break;
+
+                    case 'B':
+                        buzzer.play(587.33);
+
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                        break;
+
+
+                    case 'C':
+                        buzzer.play(523.251);
+
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                        break;
+                }
+                // Stop the buzzer.
+                buzzer.stop();
+// Close the device when done.
+                buzzer.close();
+
+
                 //soundbox.start();
 
 
@@ -296,6 +433,17 @@ public class Game {
 
                     try {
 
+
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    Carte.sound_lose();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }).start();
 
                         lose();
 
@@ -342,6 +490,17 @@ public class Game {
 
                         try {
 
+                            new Thread(new Runnable() {
+                                public void run() {
+                                    try {
+                                        Carte.sound_win();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }).start();
+
                             win();
                             play();
                         } catch (IOException e) {
@@ -366,6 +525,7 @@ public class Game {
     ////////////////////////SAUVEGARDE RECORD////////////////////////////////
     protected void save_record(){
         //SAUVEGARDER RECORD
+        record=score;
     }
 
 

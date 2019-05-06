@@ -35,7 +35,7 @@ public class Parameter {
 
     public static final int RAINBOW_BLINK = 3;
     public static final long TIME_LED_MEMO = 800;
-    public static final long TIME_NOTE = 500;
+    public static final long TIME_NOTE = 100;
 
 
 

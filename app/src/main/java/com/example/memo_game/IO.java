@@ -11,6 +11,7 @@ import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
 import com.google.android.things.contrib.driver.pwmspeaker.Speaker;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
 import com.google.android.things.pio.Gpio;
+import com.teamgeny.androidthings1.rainbow.Piezo;
 
 import java.io.IOException;
 
@@ -28,8 +29,8 @@ public class IO {
 
     }
 
+    Piezo Soundbox;
     Parameter parameters;
-    Notes Soundbox;
 
     boolean Buttons_pressed;
 
@@ -591,28 +592,24 @@ public class IO {
 
     //////BUZZER
 
-    protected void note_button(char P_Button) throws IOException {
+    protected void note_button(char P_Button) {
 
-        Speaker buzzer = RainbowHat.openPiezo();
 
         switch (P_Button){
-            case 'A':
-                int DO_frequency = Soundbox.Return_note('A');
-                buzzer.play(DO_frequency);
 
+            case 'A':
+               Soundbox.play(Piezo.Note.DO);
 
                 break;
 
             case 'B':
-                int RE_frequency = Soundbox.Return_note('B');
-                buzzer.play(RE_frequency);
+               Soundbox.play(Piezo.Note.RE);
 
 
                 break;
 
             case 'C':
-                int MI_frequency = Soundbox.Return_note('C');
-                buzzer.play(MI_frequency);
+                Soundbox.play(Piezo.Note.MI);
 
                 break;
         }
@@ -624,27 +621,150 @@ public class IO {
             e.printStackTrace();
         }
 
-        // Close the device when done.
-        buzzer.stop();
-        buzzer.close();
+        Soundbox.stop();
+        Soundbox.clean();
+
     }
 
 
 
 
-    protected void sound_lose(){
+    protected void sound_lose() throws IOException {
+
+        Speaker buzzer = RainbowHat.openPiezo();
+        buzzer.play(349.228);
+
+        try {
+            Thread.sleep(350);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(587.33);
+
+        try {
+            Thread.sleep(350);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(329.628);
+
+        try {
+            Thread.sleep(350);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // Stop the buzzer.
+        buzzer.stop();
+// Close the device when done.
+        buzzer.close();
+
 
     }
 
     //protected
     public void sound_win() throws IOException {
-
         Speaker buzzer = RainbowHat.openPiezo();
-        buzzer.play(440);
-// Stop the buzzer.
+
+        buzzer.play(987);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+        buzzer.play(987);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(987);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(987);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(987);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(784);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(880);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        buzzer.play(987);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        buzzer.play(880);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        buzzer.play(987);
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // Stop the buzzer.
         buzzer.stop();
 // Close the device when done.
         buzzer.close();
+
+
 
     }
 
